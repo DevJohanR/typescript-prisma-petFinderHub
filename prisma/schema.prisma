@@ -19,5 +19,47 @@ model Usuario {
   id            Int       @id @default(autoincrement())
   nombre        String
   email         String    @unique
+  password      String
   esVoluntario  Boolean   @default(false)
+  mascotas Mascota[]
+  campana VoluntarioEnCampana[]
+}
+
+model Mascota{
+  id Int @id @default(autoincrement())
+  tipo String
+  nombre String
+  duenoId Int
+  dueno Usuario @relation(fields: [duenoId], references: [id])
+  campana  Campana? @relation(name: "CampanaToMascota")
+  veterinarioId Int
+  veterinario Veterinario @relation(fields: [veterinarioId], references: [id])
+ 
+}
+
+model Veterinario{
+  id Int @id @default(autoincrement())
+  nombre String
+  clinica String
+  mascotas Mascota[]
+}
+
+model Campana{
+  id Int @id @default(autoincrement())
+  titulo String
+  descripcion String
+  activa Boolean @default(false)
+  mascotaId Int @unique
+  mascota   Mascota  @relation(name: "CampanaToMascota", fields: [mascotaId], references: [id])
+  usuario VoluntarioEnCampana[]
+
+}
+
+//Tabla Intermedia M:M
+model VoluntarioEnCampana{
+  voluntarioId Int
+  voluntario Usuario @relation(fields: [voluntarioId], references: [id])
+  campanaId Int
+  campana Campana @relation(fields: [campanaId], references: [id])
+  @@id([voluntarioId,campanaId])
 }
