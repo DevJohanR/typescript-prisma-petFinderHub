@@ -19,7 +19,7 @@ model Usuario {
   id            Int       @id @default(autoincrement())
   nombre        String
   email         String    @unique
-  password      String
+  password      String?
   esVoluntario  Boolean   @default(false)
   mascotas Mascota[]
   campana VoluntarioEnCampana[]
