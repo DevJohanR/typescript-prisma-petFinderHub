@@ -2,6 +2,7 @@ import express from "express"
 import dotenv from "dotenv";
 //jjj
 import { prisma } from "./db";
+import authRoutes from './routes/authRoutes';
 
 dotenv.config();
 const app = express()
@@ -25,6 +26,7 @@ app.get('/usuarios', async (_req, res) => {
     }
 });
 
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, ()=>{
     console.log(`server runing on port ${PORT}`)
