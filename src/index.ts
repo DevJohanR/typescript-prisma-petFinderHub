@@ -1,13 +1,17 @@
 import express from "express"
 import dotenv from "dotenv";
-//jjj
+import morgan from "morgan";
 import { prisma } from "./db";
 import authRoutes from './routes/authRoutes';
 
 dotenv.config();
 const app = express()
 
+
 app.use(express.json())
+
+app.use(morgan('dev'));
+
 
 const PORT = 3000
 
