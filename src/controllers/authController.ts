@@ -1,13 +1,6 @@
 import { Request, Response } from 'express';
 import authService from '../services/authService';
 
-/*
-Responsabilidad: Los controladores manejan las peticiones HTTP (como POST, GET, etc.) y son responsables de decidir qué hacer con la solicitud. Reciben los datos del cliente, validan la entrada (en algunos casos), llaman a los servicios para realizar las operaciones de negocio, y finalmente envían una respuesta al cliente.
-
-Ejemplo: Aqui, el controlador de autenticación (authController.ts) maneja las rutas de registro y login. Recibe las solicitudes, las procesa (por ejemplo, extrae los datos del cuerpo de la solicitud), llama a los métodos del servicio correspondiente, y luego devuelve la respuesta al cliente.
-*/
-
-
 class AuthController {
     async register(req: Request, res: Response): Promise<Response> {
         try {
