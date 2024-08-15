@@ -1,9 +1,13 @@
 import bcrypt from 'bcryptjs';
 import Usuario from '../models/Usuario';
+import crypto from 'crypto'; // <-- Para generar tokens de verificación
 import jwt from 'jsonwebtoken';
+import sgMail from '@sendgrid/mail'; // <-- Para enviar correos electrónicos con SendGrid
 import dotenv from 'dotenv';
+import { prisma } from '../db';
 
 dotenv.config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string); // <-- API key de SendGrid
 
 class AuthService {
     // Método para registrar un usuario
@@ -14,8 +18,42 @@ class AuthService {
         }
 
         const newUser = new Usuario(nombre, email, password);
-        return await newUser.save();
+        const savedUser = await newUser.save();
+
+             // Generar el token de verificación
+             const verificationToken = crypto.randomBytes(32).toString('hex'); // <-- Generar un token único de verificación
+
+             // Guardar el token de verificación en la base de datos
+             await prisma.verificationToken.create({
+                 data: {
+                     token: verificationToken,
+                     userId: savedUser.id,
+                 },
+             }); // <-- Guardar el token en la base de datos con una relación al usuario
+     
+             // Enviar correo de verificación
+             await this.sendVerificationEmail(savedUser.email, verificationToken); // <-- Enviar correo con el token
+     
+             return savedUser;
+
     }
+
+// Método para enviar el correo de verificación
+async sendVerificationEmail(userEmail: string, token: string) {
+    const verificationUrl = `http://localhost:3000/api/auth/verify?token=${token}`; // <-- URL para la verificación
+
+    const message = {
+        to: userEmail,
+        from: 'ejohan7777@gmail.com',
+        subject: 'Verify Your Email',
+        text: `Please verify your email by clicking the following link: ${verificationUrl}`,
+        html: `<p>Please verify your email by clicking the following link: <a href="${verificationUrl}">Verify Email</a></p>`,
+    };
+
+    await sgMail.send(message); // <-- Enviar el correo con SendGrid
+}
+
+
 
     // Método para manejar el login
     async login(email: string, password: string) {
